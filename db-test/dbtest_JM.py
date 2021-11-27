@@ -32,4 +32,6 @@ for line in f:
         message += ' '
     print('Message: ' + message)
 
+    print('\n')
+
 f.close()
