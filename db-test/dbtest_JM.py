@@ -11,8 +11,18 @@ def find_repeats(arr, required_number, num_repeats):
             idx += 1
     return idxArr
 
+def TimeStamps(timeArr, idxArr):
+    stampArr = []
+    print("Timestamps of peak chat activity:")
+    for i in range(len(idxArr)):
+        stampArr.append(timeArr[i])
+        stampArr.append(timeArr[i+14])
+    for i in range(len(stampArr)):
+        print(stampArr[i])
+    return stampArr
+
 def main():
-    f = open('log_short.txt', 'r', errors='ignore')
+    f = open('log.txt', 'r', errors='ignore')
 
     timeArr = []
     secArr = []
@@ -27,7 +37,7 @@ def main():
             if char != ']':
                 sample += char
         messageID = sample[9:]
-        print('MessageID: ' + messageID)
+        #print('MessageID: ' + messageID)
 
         datetime = ''
         for item in content[0:2]:
@@ -38,21 +48,21 @@ def main():
         datetime = datetime[:-1]
         if len(datetime) < 25:
                 datetime += '.000000'
-        print('Date and time: ' + datetime)
+        #print('Date and time: ' + datetime)
         timeArr.append(datetime)
 
         user = ''
         for char in content[2]:
             if char != ':':
                 user += char
-        print('User: ' + user)
+        #print('User: ' + user)
 
         message = ''
         for item in content[3:]:
             for char in item:
                 message += char
             message += ' '
-        print('Message: ' + message)
+        #print('Message: ' + message)
 
         # Algorithm for finding rates and peak finder
         time = ''
@@ -73,7 +83,7 @@ def main():
         secArr.append(totalSec)
         count = count + 1
 
-        print('\n')
+        #print('\n')
 
     secArr.sort()
     time2 = 0.0
@@ -90,13 +100,16 @@ def main():
 
     # Peak chat activity is based off of 10 consecutive chats that were sent consecutively
     # in less than 0.05 seconds within each one
-    print("Timestamps of peak chat activity:")
-    for i in (find_repeats(boolArr, True, 10)):
-        print(timeArr[i] + " - " + timeArr[i+14])
+    idxArr = find_repeats(boolArr, True, 10)
+    stampArr = TimeStamps(timeArr, idxArr)
+
+    """for i in range(len(idxArr)):
+        print(timeArr[i] + " - " + timeArr[i+14])"""
 
     totalTime = secArr[-1] - secArr[0]
     totalRate = count / totalTime
     print("Total rate: " + str(round(totalRate, 2)) + " messages/sec")
+    print(count)
 
     f.close()
 
