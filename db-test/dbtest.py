@@ -13,6 +13,18 @@ def find_repeats(arr, required_number, num_repeats):
             idx += 1
     return idxArr
 
+
+def TimeStamps(timeArr, idxArr):
+    stampArr = []
+    print("Timestamps of peak chat activity:")
+    for i in range(len(idxArr)):
+        stampArr.append(timeArr[i])
+        stampArr.append(timeArr[i+14])
+    for i in range(len(stampArr)):
+        print(stampArr[i])
+    return stampArr
+
+
 def put_msg(dynamodb=None):
     if not dynamodb:
         # Get the service resource.
@@ -26,12 +38,13 @@ def put_msg(dynamodb=None):
         # values populated until the attributes
         # on the table resource are accessed or its load() method is called.
     table = dynamodb.Table('TwitchChat')
+    tablePeakFinder = dynamodb.Table('PeakFinder')
 
     # Print out some data about the table.
     # This will cause a request to be made to DynamoDB and its attribute
     # values will be set based on the response.
     # print(table.creation_date_time)
-    f = open('log.txt', 'r', errors='ignore')
+    f = open('log_short.txt', 'r', errors='ignore')
     with table.batch_writer() as batch:
         timeArr = []
         secArr = []
@@ -39,16 +52,6 @@ def put_msg(dynamodb=None):
         count = 0
         for line in f:
             content = line.split()
-
-            sample = ''
-            messageID = ''
-            for char in content[1]:
-                if char != ']':
-                    sample += char
-            messageID = sample[9:]
-            if messageID != '':
-                messageID = int(messageID)
-            #print('messageID: ' + messageID)
 
             datetime = ''
             for item in content[0:2]:
@@ -59,29 +62,21 @@ def put_msg(dynamodb=None):
             datetime = datetime[:-1]
             if len(datetime) < 25:
                 datetime += '.000000'
-            #print('Date and time: ' + datetime)
             timeArr.append(datetime)
 
             user = ''
             for char in content[2]:
                 if char != ':':
                     user += char
-            #print('User: ' + user)
 
             message = ''
             for item in content[3:]:
                 for char in item:
                     message += char
                 message += ' '
-            #print('Message: ' + message)
 
-            # print('\n')
-            #if messageID == '':
-            #    break
-            #else:
-            response = batch.put_item(
+            batch.put_item(
                 Item={
-                    'messageID': messageID,
                     'message': message,
                     'user': user,
                     'datetime': datetime
@@ -105,8 +100,7 @@ def put_msg(dynamodb=None):
             totalSec = totalSec + sec
             secArr.append(totalSec)
             count = count + 1
-
-            #print('\n')
+        f.close()
 
         secArr.sort()
         time2 = 0.0
@@ -123,22 +117,25 @@ def put_msg(dynamodb=None):
 
         # Peak chat activity is based off of 10 consecutive chats that were sent consecutively
         # in less than 0.05 seconds within each one
-        print("Timestamps of peak chat activity:")
-        for i in (find_repeats(boolArr, True, 10)):
-            print(timeArr[i] + " - " + timeArr[i+14])
+        idxArr = find_repeats(boolArr, True, 10)
+        stampArr = TimeStamps(timeArr, idxArr)
+
+        # Puts peak chat activity timestamps into PeakFinder table on Dynamodb
+        for element1, element2 in zip(stampArr[0::2], stampArr[1::2]):
+            tablePeakFinder.put_item(
+                Item={
+                    'startClip': element1,
+                    'endClip': element2
+                }
+            )
 
         totalTime = secArr[-1] - secArr[0]
         totalRate = count / totalTime
         print("Total rate: " + str(round(totalRate, 2)) + " messages/sec")
-
-    f.close()
-    return response
+        print(count)
 
 
 if __name__ == '__main__':
-    #chat_table = create_chat_table()
-    #print("Table status:", chat_table.table_status)
-
     msg_resp = put_msg()
 
     print("Put msg succeeded:")
