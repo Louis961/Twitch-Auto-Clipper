@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Upload file to S3</title>
+    <title>Upload Twitch Log to S3</title>
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
   </head>
@@ -10,15 +10,15 @@
       <h1>S3 Uploader Test</h1>
   
       <div v-if="!image">
-        <h2>Select an image</h2>
+        <h2>Select a Twitch Log .txt File</h2>
         <input type="file" @change="onFileChange">
       </div>
       <div v-else>
-        <img :src="image" />
-        <button v-if="!uploadURL" @click="removeImage">Remove image</button>
-        <button v-if="!uploadURL" @click="uploadImage">Upload image</button>
+        <img :src="text" />
+        <button v-if="!uploadURL" @click="removeText">Remove Log File</button>
+        <button v-if="!uploadURL" @click="uploadText">Upload Log File</button>
       </div>
-      <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>
+      <h2 v-if="uploadURL">Success! Log uploaded to bucket.</h2>
     </div>
   
     <script>
@@ -44,12 +44,12 @@
             // var image = new Image()
             let reader = new FileReader()
             reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:image/jpeg'))
-              if (!e.target.result.includes('data:image/jpeg')) {
-                return alert('Wrong file type - JPG only.')
+              console.log('length: ', e.target.result.includes('data:text/txt'))
+              if (!e.target.result.includes('data:text/txt')) {
+                return alert('Wrong file type - TXT only.')
               }
               if (e.target.result.length > MAX_IMAGE_SIZE) {
-                return alert('Image is loo large.')
+                return alert('Text is loo large.')
               }
               this.image = e.target.result
             }
@@ -73,7 +73,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'image/jpeg'})
+            let blobData = new Blob([new Uint8Array(array)], {type: 'text/txt'})
             console.log('Uploading to: ', response.uploadURL)
             const result = await fetch(response.uploadURL, {
               method: 'PUT',
