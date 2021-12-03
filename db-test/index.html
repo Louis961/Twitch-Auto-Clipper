@@ -31,7 +31,7 @@
       new Vue({
         el: "#app",
         data: {
-          text: '',
+          image: '',
           uploadURL: ''
         },
         methods: {
@@ -44,8 +44,8 @@
             // var image = new Image()
             let reader = new FileReader()
             reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:text/txt'))
-              if (!e.target.result.includes('data:text/txt')) {
+              console.log('length: ', e.target.result.includes('data:image/txt'))
+              if (!e.target.result.includes('data:image/txt')) {
                 return alert('Wrong file type - TXT only.')
               }
               if (e.target.result.length > MAX_IMAGE_SIZE) {
@@ -73,7 +73,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'text/txt'})
+            let blobData = new Blob([new Uint8Array(array)], {type: 'image/txt'})
             console.log('Uploading to: ', response.uploadURL)
             const result = await fetch(response.uploadURL, {
               method: 'PUT',
