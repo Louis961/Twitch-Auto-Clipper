@@ -1,189 +1,80 @@
-<!DOCTYPE html>
+```<!DOCTYPE html>
 <html>
 
 <head>
-  <title>Upload Twitch Log to S3</title>
-  <!-- <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script> -->
-  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.357.0.min.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript">
-
-    //Bucket Configurations
-
-    var bucketName = BUCKET_NAME;
-    var bucketRegion = BUCKET_REGION;
-    //var IdentityPoolId = IDENTITY_POOL_ID;
-
-    AWS.config.update({
-      region: bucketRegion,
-    });
-
-    var s3 = new AWS.S3({
-      apiVersion: '2006-03-01',
-      params: { Bucket: bucketName }
-    });
-  </script>
+    <title>AWS S3 File Upload</title>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 </head>
 
 <body>
-  <div>
-    <input type="file" id="fileUpload">
-  </div>
-  <div>
-    <button onclick="s3upload()">Submit</button>
-  </div>
-  <progress max=”100” value=”0”></progress>
-  https://s3uploader-s3uploadbucket-15m7xrmsv9vyz.s3.us-west-1.amazonaws.com/801652.jpg
-  <script type="text/javascript">
-    function s3upload() {
-      var files = document.getElementById('fileUpload').files;
-      if (files) {
-        var file = files[0];
-        var fileName = file.name;
-        var filePath = 's3uploader-s3uploadbucket-15m7xrmsv9vyz/' + fileName;
-        //var fileUrl = 'https://' + bucketRegion + '.amazonaws.com/my-first-bucket/' + filePath;
-        var fileUrl = 'https://s3uploader-s3uploadbucket-15m7xrmsv9vyz.s3.us-west-1.amazonaws.com/' + filepath;
-        s3.upload({
-          Key: filePath,
-          Body: file,
-          ACL: 'public-read'
-        }, function (err, data) {
-          if (err) {
-            reject('error');
-          }
-          alert('Successfully Uploaded!');
-        }).on('httpUploadProgress', function (progress) {
-          var uploaded = parseInt((progress.loaded * 100) / progress.total);
-          $("progress").attr('value', uploaded);
-        });
-      }
-    };
-  </script>
-</body>
-  <!--
-    <div id="app">
-      <h1>S3 Uploader Test</h1>
-  
-      <div v-if="!image">
-        <h2>Select a Twitch Log .txt File</h2>
-        <input type="file" @change="onFileChange">
-      </div>
-      <div v-else>
-        <img :src="text" />
-        <button v-if="!uploadURL" @click="removeText">Remove Log File</button>
-        <button v-if="!uploadURL" @click="uploadText">Upload Log File</button>
-      </div>
-      <h2 v-if="uploadURL">Success! Log uploaded to bucket.</h2>
-    </div>
-  
-    <script>
-      const MAX_IMAGE_SIZE = 1000000
+    <input type="file" id="file-chooser" />
+    <button id="upload-button">Upload to S3</button>
+    <div id="results"></div>
+    <script type="text/javascript">
+    AWS.config.region = 'us-west-1'; // 1. Enter your region
 
-      /* ENTER YOUR ENDPOINT HERE */
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-west-1:4cc15bca-a24d-4c86-bf58-5247a62c4b77' // 2. Enter your identity pool
+    });
 
-      const API_ENDPOINT = 'https://7ekot8ud9k.execute-api.us-west-1.amazonaws.com/uploads' // e.g. https://ab1234ab123.execute-api.us-east-1.amazonaws.com/uploads
+    AWS.config.credentials.get(function(err) {
+        if (err) alert(err);
+        console.log(AWS.config.credentials);
+    });
 
-      new Vue({
-        el: "#app",
-        data: {
-          image: '',
-          uploadURL: ''
-        },
-        methods: {
-          onFileChange (e) {
-            let files = e.target.files || e.dataTransfer.files
-            if (!files.length) return
-            this.createImage(files[0])
-          },
-          createImage (file) {
-            // var image = new Image()
-            let reader = new FileReader()
-            reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:text/plain'))
-              // if (!e.target.result.includes('data:image/txt')) {
-              //   return alert('Wrong file type - TXT only.')
-              // }
-              // if (e.target.result.length > MAX_IMAGE_SIZE) {
-              //   return alert('Text is loo large.')
-              // }
-              this.image = e.target.result
-            }
-            reader.readAsDataURL(file)
-          },
-          removeImage: function (e) {
-            console.log('Remove clicked')
-            this.image = ''
-          },
-          uploadImage: async function (e) {
-            console.log('Upload clicked')
-            // Get the presigned URL
-            const response = await axios({
-              method: 'GET',
-              url: API_ENDPOINT
-            })
-            console.log('Response: ', response)
-            console.log('Uploading: ', this.image)
-            let binary = atob(this.image.split(',')[1])
-            let array = []
-            for (var i = 0; i < binary.length; i++) {
-              array.push(binary.charCodeAt(i))
-            }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'text/plain'})
-            console.log('Uploading to: ', response.uploadURL)
-            const result = await fetch(response.uploadURL, {
-              method: 'PUT',
-              body: blobData
-            })
-            console.log('Result: ', result)
-            // Final URL for the user doesn't need the query string params
-            this.uploadURL = response.uploadURL.split('?')[0]
-          }
+    var bucketName = 'text-file'; // Enter your bucket name
+    var bucket = new AWS.S3({
+        params: {
+            Bucket: bucketName
         }
-      })
+    });
+
+    var fileChooser = document.getElementById('file-chooser');
+    var button = document.getElementById('upload-button');
+    var results = document.getElementById('results');
+    button.addEventListener('click', function() {
+
+        var file = fileChooser.files[0];
+
+        if (file) {
+
+            results.innerHTML = '';
+            var objKey = 'testing/' + file.name;
+            var params = {
+                Key: objKey,
+                ContentType: file.type,
+                Body: file,
+                ACL: 'public-read'
+            };
+
+            bucket.putObject(params, function(err, data) {
+                if (err) {
+                    results.innerHTML = 'ERROR: ' + err;
+                } else {
+                    listObjs();
+                }
+            });
+        } else {
+            results.innerHTML = 'Nothing to upload.';
+        }
+    }, false);
+    function listObjs() {
+        var prefix = 'testing';
+        bucket.listObjects({
+            Prefix: prefix
+        }, function(err, data) {
+            if (err) {
+                results.innerHTML = 'ERROR: ' + err;
+            } else {
+                var objKeys = "";
+                data.Contents.forEach(function(obj) {
+                    objKeys += obj.Key + "<br>";
+                });
+                results.innerHTML = objKeys;
+            }
+        });
+    }
     </script>
-
-  <style type="text/css">
-    body {
-      background: #20262E;
-      padding: 20px;
-      font-family: sans-serif;
-    }
-
-    #app {
-      background: #fff;
-      border-radius: 4px;
-      padding: 20px;
-      transition: all 0.2s;
-      text-align: center;
-    }
-
-    #logo {
-      width: 100px;
-    }
-
-    h2 {
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    h1,
-    h2 {
-      font-weight: normal;
-      margin-bottom: 15px;
-    }
-
-    a {
-      color: #42b983;
-    }
-
-    img {
-      width: 30%;
-      margin: auto;
-      display: block;
-      margin-bottom: 10px;
-    }
-  </style>
 </body>
--->
-</html>
+
+</html>```
