@@ -39,7 +39,7 @@
         if (file) {
 
             results.innerHTML = '';
-            var objKey = 'testing/' + file.name;
+            var objKey = file.name;
             var params = {
                 Key: objKey,
                 ContentType: file.type,
@@ -49,31 +49,31 @@
 
             bucket.putObject(params, function(err, data) {
                 if (err) {
-                    results.innerHTML = 'ERROR: ' + err;
+                    results.innerHTML = 'ERROR 1: ' + err;
                 } else {
-                    listObjs();
+                    //listObjs();
                 }
             });
         } else {
             results.innerHTML = 'Nothing to upload.';
         }
     }, false);
-    function listObjs() {
-        var prefix = 'testing';
-        bucket.listObjects({
-            Prefix: prefix
-        }, function(err, data) {
-            if (err) {
-                results.innerHTML = 'ERROR: ' + err;
-            } else {
-                var objKeys = "";
-                data.Contents.forEach(function(obj) {
-                    objKeys += obj.Key + "<br>";
-                });
-                results.innerHTML = objKeys;
-            }
-        });
-    }
+    // function listObjs() {
+    //     //var prefix = 'testing';
+    //     bucket.listObjects({
+    //         //Prefix: prefix
+    //     }, function(err, data) {
+    //         if (err) {
+    //             results.innerHTML = 'ERROR 2: ' + err;
+    //         } else {
+    //             var objKeys = "";
+    //             data.Contents.forEach(function(obj) {
+    //                 objKeys += obj.Key + "<br>";
+    //             });
+    //             results.innerHTML = objKeys;
+    //         }
+        // });
+    //}
     </script>
 </body>
 
