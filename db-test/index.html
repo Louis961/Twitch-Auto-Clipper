@@ -2,79 +2,86 @@
 <html>
 
 <head>
-    <title>AWS S3 File Upload</title>
+    <title>Twitch Clip Generator</title>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.12.min.js"></script>
 </head>
 
 <body>
+    <header>
+        <h1>Twitch Clip Generator</h1>
+        <h3>
+            Click Choose File to upload a Twitch stream log.txt file to parse for clip generation.
+            Click Upload to send the file to be processed.
+        </h3>
+    </header>
     <input type="file" id="file-chooser" />
-    <button id="upload-button">Upload to S3</button>
+    <button id="upload-button">Upload</button>
+    <header>
+        <h3>
+            Click Retrieve to access the results of the parse and display the clip start and end times.
+        </h3>
+    </header>
+    <input id="scanData" type="button" value="Retrieve" onclick="setTimeout(scanData(), 10000)" />
+    <!-- <br><br>
+    <textarea readonly id="textarea" style="width:400px; height:800px"></textarea> -->
     <div id="results"></div>
     <script type="text/javascript">
-    AWS.config.region = 'us-west-1'; // 1. Enter your region
+        AWS.config.region = 'us-west-1'; // 1. Enter your region
 
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-west-1:4cc15bca-a24d-4c86-bf58-5247a62c4b77' // 2. Enter your identity pool
-    });
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-west-1:4cc15bca-a24d-4c86-bf58-5247a62c4b77' // 2. Enter your identity pool
+        });
 
-    AWS.config.credentials.get(function(err) {
-        if (err) alert(err);
-        console.log(AWS.config.credentials);
-    });
+        AWS.config.credentials.get(function (err) {
+            if (err) alert(err);
+            console.log(AWS.config.credentials);
+        });
 
-    var bucketName = 'text-file'; // Enter your bucket name
-    var bucket = new AWS.S3({
-        params: {
-            Bucket: bucketName
+        var bucketName = 'text-file'; // Enter your bucket name
+        var bucket = new AWS.S3({
+            params: {
+                Bucket: bucketName
+            }
+        });
+
+        var fileChooser = document.getElementById('file-chooser');
+        var button = document.getElementById('upload-button');
+        var results = document.getElementById('results');
+        button.addEventListener('click', function () {
+
+            var file = fileChooser.files[0];
+
+            if (file) {
+
+                results.innerHTML = '';
+                var objKey = file.name;
+                var params = {
+                    Key: objKey,
+                    ContentType: file.type,
+                    Body: file,
+                    ACL: 'public-read'
+                };
+
+                bucket.putObject(params, function (err, data) {
+                    if (err) {
+                        results.innerHTML = 'ERROR 1: ' + err;
+                    } else {
+                        results.innerHTML = 'Upload Success!';
+                        //listObjs();
+                    }
+                });
+            } else {
+                results.innerHTML = 'Nothing to upload.';
+            }
+        }, false);
+        var docClient = new AWS.DynamoDB.DocumentClient();
+        function scanData() {
+            //document.getElementById('textarea').innerHTML += "Scanning Peak Finder table." + "\n";
+            window.location.href =
+                "https://ufdiydefqd.execute-api.us-west-1.amazonaws.com/test/transaction"
         }
-    });
-
-    var fileChooser = document.getElementById('file-chooser');
-    var button = document.getElementById('upload-button');
-    var results = document.getElementById('results');
-    button.addEventListener('click', function() {
-
-        var file = fileChooser.files[0];
-
-        if (file) {
-
-            results.innerHTML = '';
-            var objKey = file.name;
-            var params = {
-                Key: objKey,
-                ContentType: file.type,
-                Body: file,
-                ACL: 'public-read'
-            };
-
-            bucket.putObject(params, function(err, data) {
-                if (err) {
-                    results.innerHTML = 'ERROR 1: ' + err;
-                } else {
-                    //listObjs();
-                }
-            });
-        } else {
-            results.innerHTML = 'Nothing to upload.';
-        }
-    }, false);
-    // function listObjs() {
-    //     //var prefix = 'testing';
-    //     bucket.listObjects({
-    //         //Prefix: prefix
-    //     }, function(err, data) {
-    //         if (err) {
-    //             results.innerHTML = 'ERROR 2: ' + err;
-    //         } else {
-    //             var objKeys = "";
-    //             data.Contents.forEach(function(obj) {
-    //                 objKeys += obj.Key + "<br>";
-    //             });
-    //             results.innerHTML = objKeys;
-    //         }
-        // });
-    //}
     </script>
+
 </body>
 
 </html>
