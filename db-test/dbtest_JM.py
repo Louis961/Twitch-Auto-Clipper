@@ -1,6 +1,13 @@
-# Benchmark: 15 messages
+import json
+import boto3
 
-def find_repeats(arr, required_number, num_repeats):
+s3 = boto3.client('s3')
+dynamodb = boto3.resource('dynamodb')
+
+chatTable = dynamodb.Table('TwitchChat')
+peakTable = dynamodb.Table('PeakFinder')
+
+def FindRepeats(arr, required_number, num_repeats):
     idx = 0
     idxArr = []
     while idx < len(arr):
@@ -10,107 +17,106 @@ def find_repeats(arr, required_number, num_repeats):
         else:
             idx += 1
     return idxArr
-
+    
 def TimeStamps(timeArr, idxArr):
     stampArr = []
-    print("Timestamps of peak chat activity:")
     for i in range(len(idxArr)):
         stampArr.append(timeArr[i])
         stampArr.append(timeArr[i+14])
-    for i in range(len(stampArr)):
-        print(stampArr[i])
     return stampArr
 
-def main():
-    f = open('log.txt', 'r', errors='ignore')
-
-    timeArr = []
-    secArr = []
-    rateArr = []
-    count = 0
-    for line in f:
-        content = line.split()
-
-        sample = ''
-        messageID = ''
-        for char in content[1]:
-            if char != ']':
-                sample += char
-        messageID = sample[9:]
-        #print('MessageID: ' + messageID)
-
-        datetime = ''
-        for item in content[0:2]:
-            for char in item:
-                if char != '[' and char != ']':
+def lambda_handler(event, context):
+    if event:
+        # Read the uploaded S3 item into the python code
+        file_obj = event['Records'][0]
+        filename = str(file_obj['s3']['object']['key'])
+        fileObj = s3.get_object(Bucket = "text-file", Key = filename)
+        file_content = fileObj['Body'].read().decode('utf-8')
+        
+        with chatTable.batch_writer() as batch:
+            # Start of actual coding
+            dtArr = []
+            timeArr = []
+            secArr = []
+            rateArr = []
+            boolArr = []
+            x = 0
+            
+            # Split the .txt file into list of separated messages
+            content = file_content.split('\n')
+            
+            # Iterate through entire .txt file to grab necessary info
+            for i in range(len(content)):
+                # Iterate the indexed string to pull date/time info
+                datetime = ''
+                time = ''
+                counter = 27
+                for count, char in enumerate(content[i][1:counter]):
+                    if char == ']':
+                        counter = count + 1
+                        break
                     datetime += char
-            datetime += ' '
-        datetime = datetime[:-1]
-        if len(datetime) < 25:
-                datetime += '.000000'
-        #print('Date and time: ' + datetime)
-        timeArr.append(datetime)
-
-        user = ''
-        for char in content[2]:
-            if char != ':':
-                user += char
-        #print('User: ' + user)
-
-        message = ''
-        for item in content[3:]:
-            for char in item:
-                message += char
-            message += ' '
-        #print('Message: ' + message)
-
-        # Algorithm for finding rates and peak finder
-        time = ''
-        for item in content[1]:
-            for char in item:
-                if char != ']':
-                    time += char
-        hour = float(time[0:2])
-        # Convert hours to seconds
-        totalSec = hour * 60 * 60
-
-        min = float(time[3:5])
-        # Convert min to seconds
-        totalSec = totalSec + min * 60
-
-        sec = float(time[6:])
-        totalSec = totalSec + sec
-        secArr.append(totalSec)
-        count = count + 1
-
-        #print('\n')
-
-    secArr.sort()
-    time2 = 0.0
-    for i in range(1, count):
-        time2 = (secArr[i] - secArr[i-1]) / 2
-        rateArr.append(round(time2, 2))
-
-    boolArr = []
-    for i in range(len(rateArr)):
-        if rateArr[i] < 0.05:
-            boolArr.append(True)
-        else:
-            boolArr.append(False)
-
-    # Peak chat activity is based off of 10 consecutive chats that were sent consecutively
-    # in less than 0.05 seconds within each one
-    idxArr = find_repeats(boolArr, True, 10)
-    stampArr = TimeStamps(timeArr, idxArr)
-
-    """for i in range(len(idxArr)):
-        print(timeArr[i] + " - " + timeArr[i+14])"""
-
-    totalTime = secArr[-1] - secArr[0]
-    totalRate = count / totalTime
-    print("Total rate: " + str(round(totalRate, 2)) + " messages/sec")
-    print(count)
-
-    f.close()
-
-main()
+                if len(datetime) < 25:
+                    datetime += '.000000'
+                content[i] = content[i].replace(content[i][0:counter+2], '')
+                time = datetime[11:26]
+                dtArr.append(datetime)
+                if time:
+                    timeArr.append(time)
+    
+                # Set to 16 because 15 is the max amount of characters in a Twitch username
+                counter = 25
+                for count, char in enumerate(content[i][0:counter]):
+                    if char == ':':
+                        counter = count + 1
+                        break
+                content[i] = content[i].replace(content[i][0:counter+1], '')
+                
+                # Iterate the rest of the list and make them the message string
+                counter = 0
+                for count, char in enumerate(content[i]):
+                    counter = count
+                content[i] = content[i].replace(content[i][0:counter+1], '')
+                
+                # At this point of the code, the content list taken from the .txt file should be empty
+                
+            # Algorithm uses time array to calculate rates and figure out peak times
+            # Converting all recorded times to seconds
+    
+            for i in range(len(timeArr)):
+                hour = float(timeArr[i][0:2])
+                minute = float(timeArr[i][3:5])
+                sec = float(timeArr[i][6:])
+                totalSec = (hour * 60 * 60) + (minute * 60) + sec
+                secArr.append(totalSec)
+                x = x + 1
+                
+            # Code block uses the the seconds array to calculate the rate at which messages are coming in
+            # Sort function error handles messages that were sent after a delay
+            secArr.sort()
+            for i in range(1, x):
+                time2 = secArr[i] - secArr[i-1]
+                rateArr.append(round(time2, 3))
+                
+            for i in range(len(rateArr)):
+                if rateArr[i] < 0.1:
+                    boolArr.append(True)
+                else:
+                    boolArr.append(False)
+                    
+            idxArr = FindRepeats(boolArr, True, 10)
+            stampArr = TimeStamps(dtArr, idxArr)
+            
+            #print(idxArr)
+            #print(stampArr)
+            
+            # TODO: PUTS PEAK CHAT ACTIVITY TIMESTAMPS INTO PEAKFINDER TABLE ON DDB
+            for element1, element2 in zip(stampArr[0::2], stampArr[1::2]):
+                peakTable.put_item(
+                    Item = {
+                        'startClip': element1,
+                        'endClip': element2
+                    }
+                )
+        
+    return {'statusCode': 200, 'body': 'Done!'}
