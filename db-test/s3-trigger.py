@@ -111,6 +111,7 @@ def lambda_handler(event, context):
             print(stampArr)
             
             # TODO: PUTS PEAK CHAT ACTIVITY TIMESTAMPS INTO PEAKFINDER TABLE ON DDB
+            y = 0
             for element1, element2 in zip(stampArr[0::2], stampArr[1::2]):
                 peakTable.put_item(
                     Item = {
@@ -118,7 +119,9 @@ def lambda_handler(event, context):
                         'endClip': element2
                     }
                 )
-            
+                y += 1
+                
+            print(y)
             print(x)
         
     return {'statusCode': 200, 'body': 'Done!'}
