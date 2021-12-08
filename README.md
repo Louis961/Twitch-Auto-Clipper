@@ -33,7 +33,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-  <h3 align="center">Twitch-Auto-Clipper</h3>
+  <h3 align="center">Twitch Clip Generator</h3>
 
   <p align="center">
     An awesome README template to jumpstart your projects!
