@@ -36,7 +36,7 @@
   <h3 align="center">Twitch Clip Generator</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Uload your Twitch log.txt file to generate a peak activity clip timestamp range.
   </p>
 </div>
 
