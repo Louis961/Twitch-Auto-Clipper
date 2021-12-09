@@ -164,17 +164,17 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
    [c] After creating the identity pool modify the new created unauthenticated IAM role
    <pre>
         <code>
-            {
+        {
             "Version": "2012-10-17",
             "Statement": [
-            {
-            "Sid": "PeakFinderAccess",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
-            }
+                {
+                "Sid": "PeakFinderAccess",
+                "Effect": "Allow",
+                "Action": "dynamodb:*",
+                "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
+                }
             ]
-            } 
+        } 
         </code>
    </pre>
 
