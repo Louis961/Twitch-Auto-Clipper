@@ -153,6 +153,21 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
    [b] Name the identiy pool and make sure that unauthenticated identities is enabled
 
    [c] After creating the identity pool modify the new created unauthenticated IAM role
+   <pre class="line-numbers">
+        <code class="language-py>
+            {
+            "Version": "2012-10-17",
+            "Statement": [
+            {
+            "Sid": "PeakFinderAccess",
+            "Effect": "Allow",
+            "Action": "dynamodb:*",
+            "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
+            }
+            ]
+            } 
+        </code>
+   </pre>
    {
     "Version": "2012-10-17",
     "Statement": [
