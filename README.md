@@ -204,3 +204,11 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Testing
+1. Head to Amplify and click the generated wesite link
+
+2. Upload log-short.txt
+NOTE: Uploading log.txt will take a long time due to the large amount of lines in the file
+
+3. Wait some time for the backend to process the log
+
+4. Click on the retrieve button and you should see the timestamp
