@@ -110,37 +110,46 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
 
 2. Initialize an S3 bucket instance and configure it to be public
    [a] Bucket policy
-   {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:*",
-            "Resource": "arn:aws:s3:::text-file/*"
-        }
-    ]
-    }
+       <pre>
+        <code>
+         {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "PublicReadGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:*",
+                    "Resource": "arn:aws:s3:::text-file/*"
+                }
+            ]
+         }
+        </code>
+   </pre>    
+       
     [b]Cross-origin resource sharing(CORS)
-    [
-    {
-        "AllowedHeaders": [
-            "*"
-        ],
-        "AllowedMethods": [
-            "POST",
-            "GET",
-            "PUT",
-            "DELETE",
-            "HEAD"
-        ],
-        "AllowedOrigins": [
-            "*"
-        ],
-        "ExposeHeaders": []
-    }
-    ]
+       <pre>
+        <code>
+        [
+            {
+                "AllowedHeaders": [
+                    "*"
+                ],
+                "AllowedMethods": [
+                    "POST",
+                    "GET",
+                    "PUT",
+                    "DELETE",
+                    "HEAD"
+                ],
+                "AllowedOrigins": [
+                    "*"
+                ],
+                "ExposeHeaders": []
+            }
+        ]
+        </code>
+   </pre>
 
 3. Initialize DynamoDB table
 
@@ -168,18 +177,6 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
             } 
         </code>
    </pre>
-   
-   {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PeakFinderAccess",
-            "Effect": "Allow",
-            "Action": "dynamodb:*",
-            "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
-        }
-    ]
-    } 
 
 6. Create an additional Lambda function for accessDDBTable.py 
    [a] Add an API gateway trigger 
