@@ -33,7 +33,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-  <h3 align="center">Twitch Clip Generator</h3>
+  <h1 align="center">Twitch Clip Generator</h1>
   <h2 align="center">Justin Memean, Louis Zuckerman, and Ian Nguyen(Section 1)</h2>
 
   <p align="center">
