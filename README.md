@@ -36,7 +36,7 @@
   <h3 align="center">Twitch Clip Generator</h3>
 
   <p align="center">
-    Uload a Twitch log.txt viewer chat file from a recent stream to generate a peak activity clip timestamp range.
+    Upload a Twitch log.txt viewer chat file from a recent stream to generate a peak activity clip timestamp range.
   </p>
 </div>
 
