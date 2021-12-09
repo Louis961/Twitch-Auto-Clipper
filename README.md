@@ -60,6 +60,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#testing">Testing</a></li>
 <!--     <li><a href="#roadmap">Roadmap</a></li>
 <!--     <li><a href="#contributing">Contributing</a></li> -->
 <!--    <li><a href="#license">License</a></li>
@@ -201,3 +202,5 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
    [b] Zip the html by itself and uplaod to Amplify 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Testing
