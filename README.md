@@ -72,19 +72,8 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+This project allows a user to uplaoad a log of their Twitch chat and recieve times stamps of a potential clip. This project
+is written mostly in Python and has a HTML frontend.  It utilises AWS services such as Cognito, Amplify, S3 Buckets, Lambda, DynamoDB, IAM, and Amazon API Gateways(Restful APIs).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -105,31 +94,90 @@ Use the `BLANK_README.md` to get started.
 
 <!-- GETTING STARTED -->
 ## Getting Started
+1. Download the repository and full read the READ.me
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+2. Enable AWS CloudWatch for the various services as it will make it a lot easier to monitor any function run by Lambda
 
 ### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
 * AWS User Account
 
 ### Installation
+1. Create an IAM role for the following services to communicate and write: S3, Cloudwatch, 
+   DynamoDB, Lambda, Amazon API Gateway
+   [a] In a case if there are more than one users accessing the account create IAM group for the users
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+NOTE: Each addition of an AWS services will require an IAM role in order for the services to communicate with eachother
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+2. Initialize an S3 bucket instance and configure it to be public
+   [a] Bucket policy
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::text-file/*"
+        }
+    ]
+    }
+    [b]Cross-origin resource sharing(CORS)
+    [
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "POST",
+            "GET",
+            "PUT",
+            "DELETE",
+            "HEAD"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": []
+    }
+    ]
+
+3. Initialize DynamoDB table
+
+4. Create a Lambda function for s3-trigger.py and configure the IAM role
+   [a] Manual add trigger to the designated S3 bucket
+
+5. Create a Cognito role
+   [a] Click manage identity pool
+
+   [b] Name the identiy pool and make sure that unauthenticated identities is enabled
+
+   [c] After creating the identity pool modify the new created unauthenticated IAM role
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PeakFinderAccess",
+            "Effect": "Allow",
+            "Action": "dynamodb:*",
+            "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
+        }
+    ]
+    } 
+
+6. Create an additional Lambda function for accessDDBTable.py 
+   [a] Add an API gateway trigger 
+
+7. Create an API gateway 
+   [a] Create a method 
+
+   [b] Create a GET resource 
+
+   [c] Deploy the API 
+
+8. Create a Amplify application
+   [a] Modify the html with the approiate values
+
+   [b] Zip the html by itself and uplaod to Amplify 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
