@@ -104,11 +104,13 @@ is written mostly in Python and has a HTML frontend.  It utilises AWS services s
 ### Installation
 1. Create an IAM role for the following services to communicate and write: S3, Cloudwatch, 
    DynamoDB, Lambda, Amazon API Gateway
+   
    [a] In a case if there are more than one users accessing the account create IAM group for the users
 
 NOTE: Each addition of an AWS services will require an IAM role in order for the services to communicate with eachother
 
 2. Initialize an S3 bucket instance and configure it to be public
+   
    [a] Bucket policy
        <pre>
         <code>
@@ -154,9 +156,11 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
 3. Initialize DynamoDB table
 
 4. Create a Lambda function for s3-trigger.py and configure the IAM role
+   
    [a] Manual add trigger to the designated S3 bucket
 
 5. Create a Cognito role
+   
    [a] Click manage identity pool
 
    [b] Name the identiy pool and make sure that unauthenticated identities is enabled
@@ -167,21 +171,23 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
         {
             "Version": "2012-10-17",
             "Statement": [
-                {
-                "Sid": "PeakFinderAccess",
-                "Effect": "Allow",
-                "Action": "dynamodb:*",
-                "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
-                }
-            ]
-        } 
+        {
+            "Sid": "PeakFinderAccess",
+            "Effect": "Allow",
+            "Action": "dynamodb:*",
+            "Resource": "arn:aws:dynamodb:[Server]:[ACCOUNTID]:table/[TableName]"
+        }
+        ]
+            } 
         </code>
    </pre>
 
 6. Create an additional Lambda function for accessDDBTable.py 
+   
    [a] Add an API gateway trigger 
 
 7. Create an API gateway 
+   
    [a] Create a method 
 
    [b] Create a GET resource 
@@ -189,6 +195,7 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
    [c] Deploy the API 
 
 8. Create a Amplify application
+   
    [a] Modify the html with the approiate values
 
    [b] Zip the html by itself and uplaod to Amplify 
