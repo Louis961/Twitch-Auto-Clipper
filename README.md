@@ -153,8 +153,8 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
    [b] Name the identiy pool and make sure that unauthenticated identities is enabled
 
    [c] After creating the identity pool modify the new created unauthenticated IAM role
-   <pre class="line-numbers">
-        <code class="language-py>
+   <pre>
+        <code>
             {
             "Version": "2012-10-17",
             "Statement": [
@@ -168,6 +168,7 @@ NOTE: Each addition of an AWS services will require an IAM role in order for the
             } 
         </code>
    </pre>
+   
    {
     "Version": "2012-10-17",
     "Statement": [
