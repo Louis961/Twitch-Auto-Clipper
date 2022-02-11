@@ -74,7 +74,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This project allows a user to uplaoad a log of their Twitch chat and recieve times stamps of a potential clip. This project
+This project allows a user to upload a log of their Twitch chat and recieve timestamps of a potential clip. This project
 is written mostly in Python and has a HTML frontend.  It utilises AWS services such as Cognito, Amplify, S3 Buckets, Lambda, DynamoDB, IAM, and Amazon API Gateways(Restful APIs).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -96,7 +96,7 @@ is written mostly in Python and has a HTML frontend.  It utilises AWS services s
 
 <!-- GETTING STARTED -->
 ## Getting Started
-1. Download the repository and full read the READ.me
+1. Download the repository and fully read the READ.me
 
 2. Enable AWS CloudWatch for the various services as it will make it a lot easier to monitor any function run by Lambda
 
@@ -107,9 +107,9 @@ is written mostly in Python and has a HTML frontend.  It utilises AWS services s
 1. Create an IAM role for the following services to communicate and write: S3, Cloudwatch, 
    DynamoDB, Lambda, Amazon API Gateway
    
-   [a] In a case if there are more than one users accessing the account create IAM group for the users
+   [a] In a case if there are more than one users accessing the account, create IAM group for the users
 
-NOTE: Each addition of an AWS services will require an IAM role in order for the services to communicate with eachother
+NOTE: Each addition of an AWS service will require an IAM role in order for the services to communicate securely with each other
 
 2. Initialize an S3 bucket instance and configure it to be public
    
