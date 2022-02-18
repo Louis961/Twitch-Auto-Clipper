@@ -26,8 +26,9 @@
     <textarea readonly id="textarea" style="width:400px; height:800px"></textarea> -->
     <div id="results"></div>
     <script type="text/javascript">
-        AWS.config.region = 'us-west-1'; // 1. Enter your region
+        AWS.config.region = 'us-east-1'; // 1. Enter your region
 
+        //todo: add new cognito creds
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: 'us-west-1:4cc15bca-a24d-4c86-bf58-5247a62c4b77' // 2. Enter your identity pool
         });
@@ -37,7 +38,7 @@
             console.log(AWS.config.credentials);
         });
 
-        var bucketName = 'text-file'; // Enter your bucket name
+        var bucketName = 'text-file-testing'; // Enter your bucket name
         var bucket = new AWS.S3({
             params: {
                 Bucket: bucketName
@@ -60,6 +61,7 @@
                     ContentType: file.type,
                     Body: file,
                     ACL: 'public-read'
+                    //todo: modify permissions for ACL to be private
                 };
 
                 bucket.putObject(params, function (err, data) {
@@ -79,6 +81,7 @@
             //document.getElementById('textarea').innerHTML += "Scanning Peak Finder table." + "\n";
             window.location.href =
                 //Put the AWS API invoke URL here
+                //todo: add new AWS API invoke url
                 "https://ufdiydefqd.execute-api.us-west-1.amazonaws.com/test/transaction"
         }
     </script>
