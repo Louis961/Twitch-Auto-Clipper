@@ -30,7 +30,7 @@ def lambda_handler(event, context):
         # Read the uploaded S3 item into the python code
         file_obj = event['Records'][0]
         filename = str(file_obj['s3']['object']['key'])
-        fileObj = s3.get_object(Bucket = "text-file", Key = filename)
+        fileObj = s3.get_object(Bucket = "text-file-testing", Key = filename)
         file_content = fileObj['Body'].read().decode('utf-8')
         
         with chatTable.batch_writer() as batch:
