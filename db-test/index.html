@@ -30,7 +30,7 @@
 
         //todo: add new cognito creds
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-1:9789a90a-1c94-4854-89d3-1bbba2d87628' // 2. Enter your identity pool
+            IdentityPoolId: 'us-east-1:aa234b76-3854-4243-aec6-227bca054707' // 2. Enter your identity pool
         });
 
         AWS.config.credentials.get(function (err) {
@@ -82,7 +82,7 @@
             window.location.href =
                 //Put the AWS API invoke URL here
                 //todo: add new AWS API invoke url
-                "https://ufdiydefqd.execute-api.us-west-1.amazonaws.com/test/transaction"
+                "https://rt9lo0tte8.execute-api.us-east-1.amazonaws.com/testing/transaction"
         }
     </script>
 
