@@ -34,7 +34,7 @@
   </a> -->
 
   <h1 align="center">Twitch Clip Generator</h1>
-  <h2 align="center">Justin Memean, Louis Zuckerman, and Ian Nguyen(Section 1)</h2>
+  <h2 align="center">Justin Memean, Louis Zuckerman, and Ian Nguyen</h2>
 
   <p align="center">
     Upload a Twitch log.txt viewer chat file from a recent stream to generate a peak activity clip timestamp range.
